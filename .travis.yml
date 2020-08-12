@@ -14,7 +14,9 @@ cache:
 ghc:
   - '8.8'
   - '8.6'
+before-install:
+  - cabal update
 script:
-  - cabal new-build all
-  - git fetch origin master:origin/master && git rebase origin/master --exec "cabal new-build all"
+  - cabal new-build
+  - git fetch origin master:origin/master && git rebase origin/master --exec "cabal new-build"
 install: skip
