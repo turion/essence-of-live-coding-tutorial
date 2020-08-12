@@ -9,6 +9,9 @@ let
 
   myPkgs = haskellPackages.extend (pkgs.haskell.lib.packageSourceOverrides {
     essence-of-live-coding-tutorial = ./.;
+    # Uncomment the following lines if you have forked essence-of-live-coding and insert the appropriate path
+    # essence-of-live-coding = ../essence-of-live-coding/essence-of-live-coding;
+    # essence-of-live-coding-gloss = ../essence-of-live-coding/essence-of-live-coding-gloss;
   });
 in
 myPkgs.shellFor {
