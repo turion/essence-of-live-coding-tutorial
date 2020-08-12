@@ -1,0 +1,12 @@
+*.txt
+*.pdf
+*.html
+dist/*
+dist-newstyle
+acmart*
+*.png
+*.o
+*.hi
+*.hp
+*.prof
+*.ps
