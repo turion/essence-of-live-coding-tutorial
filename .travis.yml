@@ -1,0 +1,20 @@
+language: haskell
+addons:
+  apt:
+    packages:
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - freeglut3-dev
+      - libpulse-dev
+      - libblas-dev
+      - liblapack-dev
+cache:
+  directories:
+    - $HOME/.cabal
+ghc:
+  - '8.8'
+  - '8.6'
+script:
+  - cabal new-build all
+  - git fetch origin master:origin/master && git rebase origin/master --exec "cabal new-build all"
+install: skip
