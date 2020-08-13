@@ -14,6 +14,7 @@ import LiveCoding
 import LiveCoding.Gloss
 
 import Debug.Trace
+import Data.Function ((&))
 
 border :: Num a => (a, a)
 border = (300, 400)
@@ -21,14 +22,15 @@ border = (300, 400)
 ballRadius :: Num a => a
 ballRadius = 20
 
+glossSettings :: GlossSettings
+glossSettings = defaultSettings
+  { debugEvents = True
+  , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
+  }
+
 liveProgram :: LiveProgram (HandlingStateT IO)
-liveProgram = liveCell
-  $ glossWrapC defaultSettings
-      { debugEvents = True
-      , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
-      }
-  glossCell
-  -- $ withDebuggerC glossCell statePlay -- Uncomment to display the internal state
+liveProgram = liveCell $ glossWrapC glossSettings $ glossCell
+  -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 glossCell :: Cell PictureM () ()
 glossCell = proc () -> do
