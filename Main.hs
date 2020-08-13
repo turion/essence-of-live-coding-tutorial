@@ -119,7 +119,10 @@ ballSim = proc events -> do
           , guard (ballPosY ball >   borderY - ballRadius && ballVelY ball > 0)
               $> (0, -2 * ballVelY ball)
           ]
-    frictionVel <- integrate -< (-0.3) *^ ballVel ball
+        frictionCoeff
+          | magnitude (ballVel ball) < 30 = -4
+          | otherwise = -0.3
+    frictionVel <- integrate -< frictionCoeff *^ ballVel ball
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
     let newVel = frictionVel ^+^ impulses
     newPos <- integrate -< newVel
