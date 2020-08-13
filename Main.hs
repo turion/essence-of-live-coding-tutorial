@@ -50,7 +50,7 @@ glossCell = proc () -> do
   returnA    -< ()
 
 ballPic :: Ball -> Picture
-ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle 10 ballRadius
+ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
 
 data Ball = Ball
   { pos :: (Float, Float)
