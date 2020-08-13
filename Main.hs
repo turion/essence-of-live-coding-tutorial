@@ -49,6 +49,9 @@ glossCell = proc () -> do
   addPicture -< ballPic ball
   returnA    -< ()
 
+ballPic :: Ball -> Picture
+ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle 10 ballRadius
+
 data Ball = Ball
   { pos :: (Float, Float)
   , vel :: (Float, Float)
@@ -81,9 +84,6 @@ ballSim = proc events -> do
     newPos <- integrate -< newVel
     let ball = Ball newPos newVel
   returnA -< ball
-
-ballPic :: Ball -> Picture
-ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle 10 ballRadius
 
 clicks :: [Event] -> [(Float, Float)]
 clicks = catMaybes . map click
