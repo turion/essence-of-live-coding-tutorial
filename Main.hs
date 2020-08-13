@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE Arrows #-}
 module Main where
@@ -19,9 +20,14 @@ import LiveCoding.Gloss
 
 import Debug.Trace
 import Data.Function ((&))
+import Control.Monad.Fix (MonadFix)
 
+borderX :: Num a => a
+borderX = 300
+borderY :: Num a => a
+borderY = 400
 border :: Num a => (a, a)
-border = (300, 400)
+border = (borderX, borderY)
 
 ballRadius :: Num a => a
 ballRadius = 20
@@ -43,21 +49,41 @@ glossCell = proc () -> do
   addPicture -< ballPic ball
   returnA    -< ()
 
-ballSim :: Monad m => Cell m [Event] (Float, Float)
-ballSim = feedback ((0, 0), (0, 0)) $ proc (events, (lastBall, lastSpeed)) -> do
-  let accMouse = sumV $ (^-^ lastBall) <$> clicks events
-      accCollision = sumV $ catMaybes
-        [ guard (fst lastBall < - fst border + ballRadius && fst lastSpeed < 0) $> (-2 * fst lastSpeed, 0)
-        , guard (fst lastBall >   fst border - ballRadius && fst lastSpeed > 0) $> (-2 * fst lastSpeed, 0)
-        , guard (snd lastBall < - snd border + ballRadius && snd lastSpeed < 0) $> (0, -2 * snd lastSpeed)
-        , guard (snd lastBall >   snd border - ballRadius && snd lastSpeed > 0) $> (0, -2 * snd lastSpeed)
-        ]
-  let speed = sumV [accMouse, 0.97 *^ accCollision, 0.996 *^ lastSpeed]
-  ball <- integrate -< speed
-  returnA -< (ball, (ball, speed))
+data Ball = Ball
+  { pos :: (Float, Float)
+  , vel :: (Float, Float)
+  } deriving Data
 
-ballPic :: (Float, Float) -> Picture
-ballPic (x, y) = translate x y $ color white $ thickCircle 10 ballRadius
+initBall :: Ball
+initBall = Ball
+  { pos = (0, 0)
+  , vel = (0, 0)
+  }
+
+posX = fst . pos
+posY = snd . pos
+velX = fst . vel
+velY = snd . vel
+
+ballSim :: (Monad m, MonadFix m) => Cell m [Event] Ball
+ballSim = proc events -> do
+  rec
+    let accMouse = sumV $ (^-^ pos ball) <$> clicks events
+        accCollision = sumV $ catMaybes
+          [ guard (posX ball < - borderX + ballRadius && velX ball < 0) $> (-2 * velX ball, 0)
+          , guard (posX ball >   borderX - ballRadius && velX ball > 0) $> (-2 * velX ball, 0)
+          , guard (posY ball < - borderY + ballRadius && velY ball < 0) $> (0, -2 * velY ball)
+          , guard (posY ball >   borderY - ballRadius && velY ball > 0) $> (0, -2 * velY ball)
+          ]
+    frictionVel <- integrate -< (-0.3) *^ vel ball
+    impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
+    let newVel = frictionVel ^+^ impulses
+    newPos <- integrate -< newVel
+    let ball = Ball newPos newVel
+  returnA -< ball
+
+ballPic :: Ball -> Picture
+ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle 10 ballRadius
 
 clicks :: [Event] -> [(Float, Float)]
 clicks = catMaybes . map click
@@ -71,11 +97,15 @@ main = runHandlingStateT $ foreground liveProgram
 
 -- * To be moved to main library
 
+sumS
+  :: (Monad m, Data v, VectorSpace v)
+  => Cell m v v
+sumS = Cell
+  { cellState = zeroV
+  , cellStep = \accum v -> return (accum, accum ^+^ v)
+  }
+
 integrate
   :: (Monad m, Data v, VectorSpace v, Fractional (Scalar v))
   => Cell m v v
-integrate = Cell
-  { cellState = zeroV
-  , cellStep = \accum v -> accum `seq`
-      return (accum, accum ^+^ v ^/ fromIntegral (stepsPerSecond glossSettings))
-  }
+integrate = arr (^/ fromIntegral (stepsPerSecond glossSettings)) >>> sumS
