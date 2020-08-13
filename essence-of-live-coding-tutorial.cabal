@@ -40,7 +40,7 @@ executable essence-of-live-coding-tutorial
   main-is:             Main.hs
   build-depends:
       base >= 4.11 && < 5
-    , gloss
+    , gloss >= 1.13
     , vector-space >= 0.16
     , essence-of-live-coding >= 0.2.0.1
     , essence-of-live-coding-gloss >= 0.2.0.1
