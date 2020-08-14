@@ -44,6 +44,7 @@ myPkgs.shellFor {
     essence-of-live-coding-tutorial
   ];
   buildInputs = with myPkgs; [
+    cabal-install
     ghcid
     ghcide
     hlint
