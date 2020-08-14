@@ -20,6 +20,9 @@ import LiveCoding hiding (integrate)
 -- essence-of-live-coding-gloss
 import LiveCoding.Gloss
 
+-- essence-of-live-coding-pulse
+import LiveCoding.Pulse
+
 
 borderX :: Num a => a
 borderX = 300
@@ -38,8 +41,16 @@ glossSettings = defaultSettings
   }
 
 liveProgram :: LiveProgram (HandlingStateT IO)
-liveProgram = liveCell $ glossWrapC glossSettings $ glossCell
+liveProgram = liveCell $ proc _ -> do
+  glossRunCell -< ()
+  pulseRunCell -< ()
+
+glossRunCell :: Cell (HandlingStateT IO) () ()
+glossRunCell = glossWrapC glossSettings $ glossCell
   -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
+
+pulseRunCell :: Cell (HandlingStateT IO) () ()
+pulseRunCell = pulseWrapC 1600 $ arr () ()
 
 glossCell :: Cell PictureM () ()
 glossCell = proc () -> do
