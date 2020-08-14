@@ -6,6 +6,8 @@ module Main where
 -- base
 import Control.Arrow
 import Control.Monad
+import Control.Monad.Fix (MonadFix)
+import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
 
@@ -18,9 +20,6 @@ import LiveCoding hiding (integrate)
 -- essence-of-live-coding-gloss
 import LiveCoding.Gloss
 
-import Debug.Trace
-import Data.Function ((&))
-import Control.Monad.Fix (MonadFix)
 
 borderX :: Num a => a
 borderX = 300
