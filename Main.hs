@@ -57,12 +57,6 @@ data Ball = Ball
   , vel :: (Float, Float)
   } deriving Data
 
-initBall :: Ball
-initBall = Ball
-  { pos = (0, 0)
-  , vel = (0, 0)
-  }
-
 posX = fst . pos
 posY = snd . pos
 velX = fst . vel
