@@ -29,9 +29,9 @@ There are also useful utilities for debugging and quickchecking.
    or install the [external dependencies listed below](#external-dependencies)
 3. `cabal update`
    (A new version of the library was released recently)
-4. Sanity check: Launch `cabal repl`.
+4. Sanity check: Launch `cabal repl` and close it again.
    This should succeed without errors.
-5. Open `app/Main.hs` in an editor.
+5. Open `Main.hs` in an editor.
 6. Run `ghcid` from the console.
 
 You should now be seeing a window containing a solid circle (a ball).
