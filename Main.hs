@@ -44,13 +44,14 @@ liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
   glossRunCell -< ()
   pulseRunCell -< ()
+  returnA      -< ()
 
 glossRunCell :: Cell (HandlingStateT IO) () ()
 glossRunCell = glossWrapC glossSettings $ glossCell
   -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
-pulseRunCell :: Cell (HandlingStateT IO) () ()
-pulseRunCell = pulseWrapC 1600 $ arr () ()
+pulseRunCell :: Cell (HandlingStateT IO) () [()]
+pulseRunCell = pulseWrapC 1600 $ arr (const ())
 
 glossCell :: Cell PictureM () ()
 glossCell = proc () -> do
@@ -93,8 +94,8 @@ clicks :: [Event] -> [(Float, Float)]
 clicks = catMaybes . map click
 
 click :: Event -> Maybe (Float, Float)
-click event@(EventKey (MouseButton LeftButton) Down _ pos) = traceShow event $ Just pos
-click event = traceShow event $ Nothing
+click (EventKey (MouseButton LeftButton) Down _ pos) = Just pos
+click _ = Nothing
 
 main :: IO ()
 main = runHandlingStateT $ foreground liveProgram
