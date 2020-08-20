@@ -43,10 +43,11 @@ main = runHandlingStateT $ foreground liveProgram
 
 liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
-  queryMaybe <- warpRunCell -< ()
-  glossRunCell              -< queryMaybe
-  -- pulseRunCell              -< ()
-  returnA                   -< ()
+  queryMaybe <- warpRunCell     -< ()
+  isObsHitMaybe <- glossRunCell -< queryMaybe
+  isObsHit <- keep False        -< isObsHitMaybe
+  pulseRunCell                  -< isObsHit
+  returnA                       -< ()
 
 -- * Warp subcomponent
 
@@ -88,22 +89,22 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe ())
+glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe Bool)
 glossRunCell = glossWrapC glossSettings $ glossCell
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
-glossCell :: Cell PictureM (Maybe Query) ()
+glossCell :: Cell PictureM (Maybe Query) Bool
 glossCell = proc queryMaybe -> do
   let webImpulse = queryMaybe >>= parseWebImpulse
-  events <- constM ask -< ()
-  ball <- ballSim      -< (events, webImpulse)
-  addPicture           -< holePic hole
-  addPicture           -< pictures $ obstaclePic <$> obstacles
-  addPicture           -< ballPic ball
-  actOnRequest         -< queryMaybe
-  returnA              -< ()
+  events <- constM ask        -< ()
+  (ball, isObsHit) <- ballSim -< (events, webImpulse)
+  addPicture                  -< holePic hole
+  addPicture                  -< pictures $ obstaclePic <$> obstacles
+  addPicture                  -< ballPic ball
+  actOnRequest                -< queryMaybe
+  returnA                     -< isObsHit
 
 -- * Parse web request
 
@@ -198,7 +199,7 @@ repulse Ball { .. } Obstacle { .. }
       then obstacleRep *^ vecDiff
       else zeroV
 
-ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) Ball
+ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) (Ball, Bool)
 ballSim = proc (events, webImpulse) -> do
   rec
     let accMouse = sumV $ (^-^ ballPos ball) <$> clicks events
@@ -217,12 +218,13 @@ ballSim = proc (events, webImpulse) -> do
           | magnitude (ballPos ball ^-^ holePos hole) < holeRad hole - ballRadius = -20
           | otherwise = -0.3
         repulsion = sumV $ repulse ball <$> obstacles
+        isObsHit = repulsion /= (0, 0)
     frictionVel <- integrate -< frictionCoeff *^ ballVel ball ^+^ repulsion
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision, fromMaybe (0, 0) webImpulse]
     let newVel = frictionVel ^+^ impulses
     newPos <- integrate -< newVel
     let ball = Ball newPos newVel
-  returnA -< ball
+  returnA -< (ball, isObsHit)
 
 clicks :: [Event] -> [(Float, Float)]
 clicks = catMaybes . map click
@@ -233,8 +235,13 @@ click _ = Nothing
 
 -- * Pulse subcomponent
 
-pulseRunCell :: Cell (HandlingStateT IO) () [()]
-pulseRunCell = pulseWrapC 1600 $ arr (const 440) >>> sawtooth >>> addSample
+pulseRunCell :: Cell (HandlingStateT IO) Bool [()]
+pulseRunCell = pulseWrapC 1600 pulseCell
+
+pulseCell :: Monad m => PulseCell m Bool ()
+pulseCell = proc b -> do
+  pulse <- sawtooth -< 440
+  addSample         -< pulse * (if b then 1 else 0)
 
 -- * Utilities
 
