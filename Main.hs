@@ -83,9 +83,9 @@ glossRunCell = glossWrapC glossSettings $ glossCell
 glossCell :: Cell PictureM () ()
 glossCell = proc () -> do
   events <- constM ask -< ()
-  ball <- ballSim -< events
-  addPicture -< ballPic ball
-  returnA    -< ()
+  ball <- ballSim      -< events
+  addPicture           -< ballPic ball
+  returnA              -< ()
 
 -- ** Ball
 
