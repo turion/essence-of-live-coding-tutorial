@@ -93,29 +93,33 @@ ballRadius :: Num a => a
 ballRadius = 20
 
 ballPic :: Ball -> Picture
-ballPic Ball { pos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
+ballPic Ball { ballPos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
 
 data Ball = Ball
-  { pos :: (Float, Float)
-  , vel :: (Float, Float)
+  { ballPos :: (Float, Float)
+  , ballVel :: (Float, Float)
   } deriving Data
 
-posX = fst . pos
-posY = snd . pos
-velX = fst . vel
-velY = snd . vel
+ballPosX = fst . ballPos
+ballPosY = snd . ballPos
+ballVelX = fst . ballVel
+ballVelY = snd . ballVel
 
 ballSim :: (Monad m, MonadFix m) => Cell m [Event] Ball
 ballSim = proc events -> do
   rec
-    let accMouse = sumV $ (^-^ pos ball) <$> clicks events
+    let accMouse = sumV $ (^-^ ballPos ball) <$> clicks events
         accCollision = sumV $ catMaybes
-          [ guard (posX ball < - borderX + ballRadius && velX ball < 0) $> (-2 * velX ball, 0)
-          , guard (posX ball >   borderX - ballRadius && velX ball > 0) $> (-2 * velX ball, 0)
-          , guard (posY ball < - borderY + ballRadius && velY ball < 0) $> (0, -2 * velY ball)
-          , guard (posY ball >   borderY - ballRadius && velY ball > 0) $> (0, -2 * velY ball)
+          [ guard (ballPosX ball < - borderX + ballRadius && ballVelX ball < 0)
+              $> (-2 * ballVelX ball, 0)
+          , guard (ballPosX ball >   borderX - ballRadius && ballVelX ball > 0)
+              $> (-2 * ballVelX ball, 0)
+          , guard (ballPosY ball < - borderY + ballRadius && ballVelY ball < 0)
+              $> (0, -2 * ballVelY ball)
+          , guard (ballPosY ball >   borderY - ballRadius && ballVelY ball > 0)
+              $> (0, -2 * ballVelY ball)
           ]
-    frictionVel <- integrate -< (-0.3) *^ vel ball
+    frictionVel <- integrate -< (-0.3) *^ ballVel ball
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
     let newVel = frictionVel ^+^ impulses
     newPos <- integrate -< newVel
