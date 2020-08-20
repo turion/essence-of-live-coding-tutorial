@@ -20,10 +20,26 @@ let
     ver = "0.2.2";
     sha256 = "0ykv261ph0858wja899d8jkx25c1nzgxm4wyw0bnvhz2r0nq7nr5";
   } {};
+  essence-of-live-coding-warp = haskellPackages.callHackageDirect {
+    pkg = "essence-of-live-coding-warp";
+    ver = "0.2.2";
+    sha256 = "1x6bqy5cssm0dw5sqb1sjkr4386xadg07mca7vv0zhxmqg8wsl2q";
+  } {};
+  http-client = haskellPackages.callHackageDirect {
+    pkg = "http-client";
+    ver = "0.7.1"; # For some reason, nixpkgs holds an older version of this
+    sha256 = "07wli92lcvj4sh8xw1lx71b1bw1wimg6cr891h5027jszyvrcaz3";
+  } {};
 
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
     overrides = self: super: {
-      inherit essence-of-live-coding essence-of-live-coding-gloss essence-of-live-coding-pulse;
+      inherit
+        essence-of-live-coding
+        essence-of-live-coding-gloss
+        essence-of-live-coding-pulse
+        essence-of-live-coding-warp
+        http-client
+      ;
     };
   };
 
