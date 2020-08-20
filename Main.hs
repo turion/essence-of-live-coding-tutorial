@@ -36,10 +36,10 @@ main = runHandlingStateT $ foreground liveProgram
 
 liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
-  -- warpRunCell  -< ()
-  glossRunCell -< ()
-  -- pulseRunCell -< ()
-  returnA      -< ()
+  queryMaybe <- warpRunCell -< ()
+  glossRunCell              -< queryMaybe
+  -- pulseRunCell              -< ()
+  returnA                   -< ()
 
 -- * Warp subcomponent
 
@@ -76,14 +76,14 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) () (Maybe ())
+glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe ())
 glossRunCell = glossWrapC glossSettings $ glossCell
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
-glossCell :: Cell PictureM () ()
-glossCell = proc () -> do
+glossCell :: Cell PictureM (Maybe Query) ()
+glossCell = proc _queryMaybe -> do
   events <- constM ask -< ()
   ball <- ballSim      -< events
   addPicture           -< holePic hole
