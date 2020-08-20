@@ -104,6 +104,7 @@ hole = Hole { holePos = (0, 250), holeRad = 40 }
 data Obstacle = Obstacle
   { obstaclePos :: (Float, Float)
   , obstacleRad :: Float
+  , obstacleRep :: Float
   }
 
 obstacles :: [Obstacle]
@@ -111,25 +112,29 @@ obstacles =
   [ Obstacle
     { obstaclePos = (-200, -200)
     , obstacleRad = 50
+    , obstacleRep = 5
     }
   , Obstacle
     { obstaclePos = (0, 150)
     , obstacleRad = 30
+    , obstacleRep = 10
     }
   , Obstacle
     { obstaclePos = (100, 150)
     , obstacleRad = 30
+    , obstacleRep = 30
     }
   , Obstacle
     { obstaclePos = (-100, 150)
     , obstacleRad = 30
+    , obstacleRep = 20
     }
   ]
 
 obstaclePic :: Obstacle -> Picture
-obstaclePic Obstacle { obstaclePos = (x, y), obstacleRad }
+obstaclePic Obstacle { obstaclePos = (x, y), .. }
   = translate x y
-  $ color blue
+  $ color (withRed (obstacleRep / 50) blue)
   $ thickCircle (obstacleRad / 2) obstacleRad
 
 -- ** Ball
@@ -157,7 +162,7 @@ repulse :: Ball -> Obstacle -> (Float, Float)
 repulse Ball { .. } Obstacle { .. }
   = let vecDiff = ballPos ^-^ obstaclePos
     in  if magnitude vecDiff < ballRadius + obstacleRad
-      then 10 *^ vecDiff
+      then obstacleRep *^ vecDiff
       else zeroV
 
 ballSim :: (Monad m, MonadFix m) => Cell m [Event] Ball
