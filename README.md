@@ -41,11 +41,31 @@ it will automatically reload.
 
 ### External dependencies
 
+* Ideally, a Linux system.
+  (See [below](#non-linux-systems).)
 * A standard Haskell development environment, including `cabal` and `ghci`.
   (`stack` is not needed.)
 * [`ghcid`](https://github.com/ndmitchell/ghcid).
 * OpenGL development libraries and PulseAudio development libraries.
   (For other sound setups, see [below](#sound-support).)
+
+### Non-Linux systems
+
+#### Windows
+
+I cannot give Windows support for graphics,
+since I don't have a Windows machine.
+If you have a Windows machine,
+you'd like to get graphics to run on your machine,
+and you're willing to test a backend and setup with me,
+please contact me via a Github issue.
+
+#### macOS
+
+Graphics/OpenGL support on macOS seems to be broken,
+see https://github.com/turion/essence-of-live-coding-tutorial/issues/3.
+If you know how to fix such an issue, please comment,
+and we'll resolve it so you can use graphics on macOS.
 
 ### Sound support
 
