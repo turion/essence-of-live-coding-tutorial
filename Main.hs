@@ -99,6 +99,11 @@ data Hole = Hole
 hole :: Hole
 hole = Hole { holePos = (0, 250), holeRad = 40 }
 
+data Obstacle = Obstacle
+  { obstaclePos :: (Float, Float)
+  , obstacleRad :: Float
+  }
+
 -- ** Ball
 
 ballRadius :: Num a => a
