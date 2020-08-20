@@ -78,7 +78,7 @@ glossSettings = defaultSettings
 
 glossRunCell :: Cell (HandlingStateT IO) () (Maybe ())
 glossRunCell = glossWrapC glossSettings $ glossCell
-  -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
+  & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
