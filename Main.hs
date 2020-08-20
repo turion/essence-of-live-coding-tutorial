@@ -14,6 +14,12 @@ import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
 
+-- bytestring
+import qualified Data.ByteString as ByteString
+
+-- utf8-string
+import Data.ByteString.UTF8 (toString)
+
 -- vector-space
 import Data.VectorSpace
 
@@ -83,13 +89,25 @@ glossRunCell = glossWrapC glossSettings $ glossCell
 -- ** Main gloss cell
 
 glossCell :: Cell PictureM (Maybe Query) ()
-glossCell = proc _queryMaybe -> do
+glossCell = proc queryMaybe -> do
   events <- constM ask -< ()
   ball <- ballSim      -< events
   addPicture           -< holePic hole
   addPicture           -< pictures $ obstaclePic <$> obstacles
   addPicture           -< ballPic ball
+  actOnRequest         -< queryMaybe
   returnA              -< ()
+
+-- * Parse web request
+
+actOnRequest :: Cell PictureM (Maybe Query) ()
+actOnRequest = proc queryMaybe -> do
+  string <- keep "" -< toString <$> renderQuery False <$> queryMaybe
+  addPicture
+    -< translate (-250) 300
+    $  scale 0.2 0.2
+    $  color red
+    $  text string
 
 -- ** Playing field
 
