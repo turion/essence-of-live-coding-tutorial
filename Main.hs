@@ -143,10 +143,7 @@ pulseRunCell = pulseWrapC 1600 $ oscAt 440 >>> addSample
 sumS
   :: (Monad m, Data v, VectorSpace v)
   => Cell m v v
-sumS = Cell
-  { cellState = zeroV
-  , cellStep = \accum v -> return (accum, accum ^+^ v)
-  }
+sumS = foldC (^+^) zeroV
 
 integrate
   :: (Monad m, Data v, VectorSpace v, Fractional (Scalar v))
