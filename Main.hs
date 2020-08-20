@@ -13,6 +13,7 @@ import Control.Monad.Fix (MonadFix)
 import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
+import Text.Read (readMaybe)
 
 -- bytestring
 import qualified Data.ByteString as ByteString
@@ -90,8 +91,9 @@ glossRunCell = glossWrapC glossSettings $ glossCell
 
 glossCell :: Cell PictureM (Maybe Query) ()
 glossCell = proc queryMaybe -> do
+  let webImpulse = queryMaybe >>= parseWebImpulse
   events <- constM ask -< ()
-  ball <- ballSim      -< events
+  ball <- ballSim      -< (events, webImpulse)
   addPicture           -< holePic hole
   addPicture           -< pictures $ obstaclePic <$> obstacles
   addPicture           -< ballPic ball
@@ -99,6 +101,14 @@ glossCell = proc queryMaybe -> do
   returnA              -< ()
 
 -- * Parse web request
+
+parseWebImpulse :: Query -> Maybe (Float, Float)
+parseWebImpulse query = do
+  xText <- join $ lookup "x" query
+  yText <- join $ lookup "y" query
+  x <- readMaybe $ toString xText
+  y <- readMaybe $ toString yText
+  return (x, y)
 
 actOnRequest :: Cell PictureM (Maybe Query) ()
 actOnRequest = proc queryMaybe -> do
@@ -183,8 +193,8 @@ repulse Ball { .. } Obstacle { .. }
       then obstacleRep *^ vecDiff
       else zeroV
 
-ballSim :: (Monad m, MonadFix m) => Cell m [Event] Ball
-ballSim = proc events -> do
+ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) Ball
+ballSim = proc (events, webImpulse) -> do
   rec
     let accMouse = sumV $ (^-^ ballPos ball) <$> clicks events
         accCollision = sumV $ catMaybes
@@ -203,7 +213,7 @@ ballSim = proc events -> do
           | otherwise = -0.3
         repulsion = sumV $ repulse ball <$> obstacles
     frictionVel <- integrate -< frictionCoeff *^ ballVel ball ^+^ repulsion
-    impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
+    impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision, fromMaybe (0, 0) webImpulse]
     let newVel = frictionVel ^+^ impulses
     newPos <- integrate -< newVel
     let ball = Ball newPos newVel
