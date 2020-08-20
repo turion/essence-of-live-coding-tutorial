@@ -58,6 +58,11 @@ warpCell = proc ((), request) -> do
   body <- arrM lazyRequestBody -< request
   returnA -< (queryString request, emptyResponse)
 
+keepNStrings :: (Monad m, Data a) => Int -> Cell m (Maybe a) [a]
+keepNStrings n = foldC step []
+  where
+    step stringMaybe strings = take n $ fromMaybe id ((:) <$> stringMaybe) strings
+
 emptyResponse :: Response
 emptyResponse = responseLBS
   status200
