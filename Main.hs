@@ -1,6 +1,6 @@
+{-# LANGUAGE Arrows #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE Arrows #-}
 module Main where
 
 -- base
