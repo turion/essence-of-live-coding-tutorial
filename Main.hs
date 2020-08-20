@@ -1,6 +1,7 @@
 {-# LANGUAGE Arrows #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
@@ -84,8 +85,19 @@ glossCell :: Cell PictureM () ()
 glossCell = proc () -> do
   events <- constM ask -< ()
   ball <- ballSim      -< events
+  addPicture           -< holePic hole
   addPicture           -< ballPic ball
   returnA              -< ()
+
+-- ** Playing field
+
+data Hole = Hole
+  { holePos :: (Float, Float)
+  , holeRad :: Float
+  }
+
+hole :: Hole
+hole = Hole { holePos = (0, 250), holeRad = 40 }
 
 -- ** Ball
 
@@ -94,6 +106,9 @@ ballRadius = 20
 
 ballPic :: Ball -> Picture
 ballPic Ball { ballPos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
+
+holePic :: Hole -> Picture
+holePic Hole { holePos = (x, y), holeRad } = translate x y $ color green $ thickCircle (holeRad / 2) holeRad
 
 data Ball = Ball
   { ballPos :: (Float, Float)
@@ -121,6 +136,7 @@ ballSim = proc events -> do
           ]
         frictionCoeff
           | magnitude (ballVel ball) < 30 = -4
+          | magnitude (ballPos ball ^-^ holePos hole) < holeRad hole - ballRadius = -20
           | otherwise = -0.3
     frictionVel <- integrate -< frictionCoeff *^ ballVel ball
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
