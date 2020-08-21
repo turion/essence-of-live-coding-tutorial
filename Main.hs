@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 module Main where
 
 -- base
@@ -152,6 +153,13 @@ ballPosY = snd . ballPos
 ballVelX = fst . ballVel
 ballVelY = snd . ballVel
 
+repulse :: Ball -> Obstacle -> (Float, Float)
+repulse Ball { .. } Obstacle { .. }
+  = let vecDiff = ballPos ^-^ obstaclePos
+    in  if magnitude vecDiff < ballRadius + obstacleRad
+      then 10 *^ vecDiff
+      else zeroV
+
 ballSim :: (Monad m, MonadFix m) => Cell m [Event] Ball
 ballSim = proc events -> do
   rec
@@ -170,7 +178,8 @@ ballSim = proc events -> do
           | magnitude (ballVel ball) < 30 = -4
           | magnitude (ballPos ball ^-^ holePos hole) < holeRad hole - ballRadius = -20
           | otherwise = -0.3
-    frictionVel <- integrate -< frictionCoeff *^ ballVel ball
+        repulsion = sumV $ repulse ball <$> obstacles
+    frictionVel <- integrate -< frictionCoeff *^ ballVel ball ^+^ repulsion
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision]
     let newVel = frictionVel ^+^ impulses
     newPos <- integrate -< newVel
