@@ -86,6 +86,7 @@ glossCell = proc () -> do
   events <- constM ask -< ()
   ball <- ballSim      -< events
   addPicture           -< holePic hole
+  addPicture           -< pictures $ obstaclePic <$> obstacles
   addPicture           -< ballPic ball
   returnA              -< ()
 
@@ -103,6 +104,32 @@ data Obstacle = Obstacle
   { obstaclePos :: (Float, Float)
   , obstacleRad :: Float
   }
+
+obstacles :: [Obstacle]
+obstacles =
+  [ Obstacle
+    { obstaclePos = (-200, -200)
+    , obstacleRad = 50
+    }
+  , Obstacle
+    { obstaclePos = (0, 150)
+    , obstacleRad = 30
+    }
+  , Obstacle
+    { obstaclePos = (100, 150)
+    , obstacleRad = 30
+    }
+  , Obstacle
+    { obstaclePos = (-100, 150)
+    , obstacleRad = 30
+    }
+  ]
+
+obstaclePic :: Obstacle -> Picture
+obstaclePic Obstacle { obstaclePos = (x, y), obstacleRad }
+  = translate x y
+  $ color blue
+  $ thickCircle (obstacleRad / 2) obstacleRad
 
 -- ** Ball
 
