@@ -67,6 +67,14 @@ see https://github.com/turion/essence-of-live-coding-tutorial/issues/3.
 If you know how to fix such an issue, please comment,
 and we'll resolve it so you can use graphics on macOS.
 
+A resolution is to use GLFW instead of GLUT:
+
+Execute `cabal configure --constraint 'essence-of-live-coding-tutorial GLFW'` or add the following line to your `cabal.project.local`:
+
+```
+constraints: essence-of-live-coding-tutorial +glfw
+```
+
 ### Sound support
 
 Currently, I only have audio support ready for Linux, PulseAudio, since this is the platform on which I develop.
@@ -74,3 +82,17 @@ If you have a different system, we will still be able to get sound working if yo
 If that is the case, please open an issue on https://github.com/turion/essence-of-live-coding/issues so we can prepare a sound backend before the tutorial.
 
 Either way, the tutorial will focus mainly on video, and only add further backends as time permits.
+
+You will want to switch off the PulseAudio backend,
+which you can do with this command:
+
+```cabal configure --constraint 'essence-of-live-coding-tutorial -pulse'```
+
+Else, you can add the following line to your `cabal.project.local`:
+
+```
+constraints: essence-of-live-coding-tutorial -pulse
+```
+
+The parts of the code in `Main.hs` referring to PulseAudio won't compile anymore,
+and you will need to comment them.
