@@ -10,3 +10,4 @@ acmart*
 *.hp
 *.prof
 *.ps
+cabal.project.local

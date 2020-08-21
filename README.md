@@ -74,3 +74,9 @@ If you have a different system, we will still be able to get sound working if yo
 If that is the case, please open an issue on https://github.com/turion/essence-of-live-coding/issues so we can prepare a sound backend before the tutorial.
 
 Either way, the tutorial will focus mainly on video, and only add further backends as time permits.
+
+If the build fails because of PulseAudio you can disable the PulseAudio backend by running
+
+```
+cabal v2-configure --constraint 'essence-of-live-coding-tutorial -pulse'
+```
