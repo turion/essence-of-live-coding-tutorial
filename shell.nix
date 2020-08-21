@@ -23,7 +23,7 @@ let
   essence-of-live-coding-warp = haskellPackages.callHackageDirect {
     pkg = "essence-of-live-coding-warp";
     ver = "0.2.2";
-    sha256 = "1x6bqy5cssm0dw5sqb1sjkr4386xadg07mca7vv0zhxmqg8wsl2q";
+    sha256 = "08h5yymvq1pr2jz6i230pkhh3bgwjjj1sazi5h3jr69nmn1zkxgh";
   } {};
   http-client = haskellPackages.callHackageDirect {
     pkg = "http-client";
