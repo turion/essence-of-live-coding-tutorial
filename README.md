@@ -74,3 +74,15 @@ If you have a different system, we will still be able to get sound working if yo
 If that is the case, please open an issue on https://github.com/turion/essence-of-live-coding/issues so we can prepare a sound backend before the tutorial.
 
 Either way, the tutorial will focus mainly on video, and only add further backends as time permits.
+
+## Helpful resources during the tutorial
+
+* Basics of composable vector graphics in Gloss: http://hackage.haskell.org/package/gloss-1.13.1.2/docs/Graphics-Gloss-Data-Picture.html
+* LiveCoding reference documentation:
+  * https://hackage.haskell.org/package/essence-of-live-coding
+  * https://hackage.haskell.org/package/essence-of-live-coding-gloss
+  * https://hackage.haskell.org/package/essence-of-live-coding-pulse
+  * https://hackage.haskell.org/package/essence-of-live-coding-warp
+* Vector space operations: http://hackage.haskell.org/package/vector-space-0.16/docs/Data-VectorSpace.html
+* Web Application Interface reference documentation:
+  * https://hackage.haskell.org/package/wai-3.2.2.1/docs/Network-Wai.html
