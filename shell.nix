@@ -7,24 +7,19 @@ let
 
   essence-of-live-coding = haskellPackages.callHackageDirect {
     pkg = "essence-of-live-coding";
-    ver = "0.2.1";
-    sha256 = "105dcfklvcjfgrdg47q36lln81mglds4jjq1g8drflmc59p2s0hk";
+    ver = "0.2.2";
+    sha256 = "03jlggbbm51wh0my41ywz1cq11v1vgvj21l2sic7gdg8hc2afnq5";
   } {};
   essence-of-live-coding-gloss = haskellPackages.callHackageDirect {
     pkg = "essence-of-live-coding-gloss";
-    ver = "0.2.1";
-    sha256 = "11az32n65r7k1j1wm38zddilfzm1p6rrdd2w9rynrsslx8pddiqz";
+    ver = "0.2.2";
+    sha256 = "10l8rb4zb2rsdsa8awkggwyf2gm40d5m1rl33bpdmz1rn984apav";
   } {};
   essence-of-live-coding-pulse = haskellPackages.callHackageDirect {
     pkg = "essence-of-live-coding-pulse";
-    ver = "0.2.0.1";
-    sha256 = "01cnvs1xjdb0pgjsl6qxrhq17b5qz9kw539v2j25iac08cqhzh7y";
+    ver = "0.2.2";
+    sha256 = "0ykv261ph0858wja899d8jkx25c1nzgxm4wyw0bnvhz2r0nq7nr5";
   } {};
-  # essence-of-live-coding-pulse = haskellPackages.callHackageDirect {
-  #   pkg = "essence-of-live-coding-pulse";
-  #   ver = "0.2.1";
-  #   sha256 = "1z1a0lvalcbazr1dv2zklaf6z47pc25hhzkm7h851qrvgqa05c31";
-  # } {};
 
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
     overrides = self: super: {

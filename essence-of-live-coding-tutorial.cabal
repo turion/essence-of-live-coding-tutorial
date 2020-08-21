@@ -1,7 +1,7 @@
 cabal-version:       >=1.10
 
 name:                essence-of-live-coding-tutorial
-version:             0.2.1
+version:             0.2.2
 synopsis:            Tutorial application for the library essence-of-live-coding.
 description:
   essence-of-live-coding is a general purpose and type safe live coding framework.
@@ -37,7 +37,7 @@ source-repository head
 source-repository this
   type:     git
   location: git@github.com:turion/essence-of-live-coding.git
-  tag:      v0.2.1
+  tag:      v0.2.2
 
 executable essence-of-live-coding-tutorial
   main-is:             Main.hs
@@ -45,11 +45,11 @@ executable essence-of-live-coding-tutorial
       base >= 4.11 && < 5
     , gloss >= 1.13
     , vector-space >= 0.16
-    , essence-of-live-coding >= 0.2.1
-    , essence-of-live-coding-gloss >= 0.2.1
+    , essence-of-live-coding >= 0.2.2
+    , essence-of-live-coding-gloss >= 0.2.2
 
   if os(linux) && flag(pulse)
     build-depends:
-      essence-of-live-coding-pulse >= 0.2.1
+      essence-of-live-coding-pulse >= 0.2.2
 
   default-language:    Haskell2010
