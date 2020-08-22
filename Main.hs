@@ -74,7 +74,7 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) () ()
+glossRunCell :: Cell (HandlingStateT IO) () (Maybe ())
 glossRunCell = glossWrapC glossSettings $ glossCell
   -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
@@ -136,7 +136,7 @@ click _ = Nothing
 -- * Pulse subcomponent
 
 pulseRunCell :: Cell (HandlingStateT IO) () [()]
-pulseRunCell = pulseWrapC 1600 $ oscAt 440 >>> addSample
+pulseRunCell = pulseWrapC 1600 $ arr (const 440) >>> sawtooth >>> addSample
 
 -- * Utilities
 
