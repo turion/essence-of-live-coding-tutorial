@@ -74,7 +74,7 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) () ()
+glossRunCell :: Cell (HandlingStateT IO) () (Maybe ())
 glossRunCell = glossWrapC glossSettings $ glossCell
   -- & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
