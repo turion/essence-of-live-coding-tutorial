@@ -136,7 +136,7 @@ click _ = Nothing
 -- * Pulse subcomponent
 
 pulseRunCell :: Cell (HandlingStateT IO) () [()]
-pulseRunCell = pulseWrapC 1600 $ oscAt 440 >>> addSample
+pulseRunCell = pulseWrapC 1600 $ arr (const 440) >>> sawtooth >>> addSample
 
 -- * Utilities
 
