@@ -50,6 +50,7 @@ executable essence-of-live-coding-tutorial
     , essence-of-live-coding >= 0.2.2
     , essence-of-live-coding-gloss >= 0.2.2
     , essence-of-live-coding-warp >= 0.2.2
+    , GLFW-b == 1.4.8.4
 
   if os(linux) && flag(pulse)
     build-depends:
