@@ -45,7 +45,7 @@ liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
   queryMaybe <- warpRunCell     -< ()
   isObsHitMaybe <- glossRunCell -< queryMaybe
-  isObsHit <- keep False        -< isObsHitMaybe
+  isObsHit <- keep 0            -< isObsHitMaybe
   pulseRunCell                  -< isObsHit
   returnA                       -< ()
 
@@ -89,13 +89,13 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe Bool)
+glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe Float)
 glossRunCell = glossWrapC glossSettings $ glossCell
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
-glossCell :: Cell PictureM (Maybe Query) Bool
+glossCell :: Cell PictureM (Maybe Query) Float
 glossCell = proc queryMaybe -> do
   let webImpulse = queryMaybe >>= parseWebImpulse
   events <- constM ask        -< ()
@@ -199,7 +199,7 @@ repulse Ball { .. } Obstacle { .. }
       then obstacleRep *^ vecDiff
       else zeroV
 
-ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) (Ball, Bool)
+ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) (Ball, Float)
 ballSim = proc (events, webImpulse) -> do
   rec
     let accMouse = sumV $ (^-^ ballPos ball) <$> clicks events
@@ -218,7 +218,7 @@ ballSim = proc (events, webImpulse) -> do
           | magnitude (ballPos ball ^-^ holePos hole) < holeRad hole - ballRadius = -20
           | otherwise = -0.3
         repulsion = sumV $ repulse ball <$> obstacles
-        isObsHit = repulsion /= (0, 0)
+        isObsHit = atan $ 0.04 * magnitude repulsion
     frictionVel <- integrate -< frictionCoeff *^ ballVel ball ^+^ repulsion
     impulses <- sumS -< sumV [accMouse, 0.97 *^ accCollision, fromMaybe (0, 0) webImpulse]
     let newVel = frictionVel ^+^ impulses
@@ -235,13 +235,13 @@ click _ = Nothing
 
 -- * Pulse subcomponent
 
-pulseRunCell :: Cell (HandlingStateT IO) Bool [()]
+pulseRunCell :: Cell (HandlingStateT IO) Float [()]
 pulseRunCell = pulseWrapC 1600 pulseCell
 
-pulseCell :: Monad m => PulseCell m Bool ()
+pulseCell :: Monad m => PulseCell m Float ()
 pulseCell = proc b -> do
-  pulse <- sawtooth -< 440
-  addSample         -< pulse * (if b then 1 else 0)
+  pulse <- sawtooth -< 440 + 20 * b
+  addSample         -< pulse * b
 
 -- * Utilities
 
