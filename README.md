@@ -91,10 +91,10 @@ Either way, the tutorial will focus mainly on video, and only add further backen
 
 | Task                                     | Branch                                                                                                            |
 | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Magnet (Ball stops when it is very slow) | [progress1_magnet](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress1_magnet)               |
-| Goal hole with high friction             | [progress2_goal](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress2_goal)                   |
-| Obstacle type                            | [progress3_obstacle_type](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress3_obstacle_type) |
-| Draw obstacles, simulate repulsion       | [progress4_obstacles](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress4_obstacles)         |
-| Connect warp backend, print last query   | [progress5_connect_warp](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress5_connect_warp)   |
-| Parse warp impulse query                 | [progress6_warp_impulse](https://github.com/turion/essence-of-live-coding-tutorial/blob/progress6_warp_impulse)   |
-| Stretch goal: Add sound                  | [solution_pulse](https://github.com/turion/essence-of-live-coding-tutorial/blob/solution_pulse)                   |
+| Magnet (Ball stops when it is very slow) | [progress1_magnet](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress1_magnet)               |
+| Goal hole with high friction             | [progress2_goal](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress2_goal)                   |
+| Obstacle type                            | [progress3_obstacle_type](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress3_obstacle_type) |
+| Draw obstacles, simulate repulsion       | [progress4_obstacles](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress4_obstacles)         |
+| Connect warp backend, print last query   | [progress5_connect_warp](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress5_connect_warp)   |
+| Parse warp impulse query                 | [progress6_warp_impulse](https://github.com/turion/essence-of-live-coding-tutorial/tree/progress6_warp_impulse)   |
+| Stretch goal: Add sound                  | [solution_pulse](https://github.com/turion/essence-of-live-coding-tutorial/tree/solution_pulse)                   |
