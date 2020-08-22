@@ -104,11 +104,13 @@ myPkgs.shellFor {
     # essence-of-live-coding-gloss
     # essence-of-live-coding-pulse
     # essence-of-live-coding-warp
+    GLUT
   ];
   buildInputs = with myPkgs; [
     cabal-install
     ghcid
     ghcide
     hlint
+    GLUT
   ];
 }
