@@ -25,11 +25,6 @@ let
     ver = "0.2.3";
     sha256 = "196ld5hqfnmri9kxksyqy2s6jp6lnjfipa9709j2bc49i6g72hzv";
   } {};
-  http-client = haskellPackages.callHackageDirect {
-    pkg = "http-client";
-    ver = "0.7.1"; # For some reason, nixpkgs holds an older version of this
-    sha256 = "07wli92lcvj4sh8xw1lx71b1bw1wimg6cr891h5027jszyvrcaz3";
-  } {};
 
   haskellPackages = pkgs.haskell.packages.${compiler}.override {
     overrides = self: super: {
@@ -38,8 +33,8 @@ let
         essence-of-live-coding-gloss
         essence-of-live-coding-pulse
         essence-of-live-coding-warp
-        http-client
       ;
+      http-client = super.http-client_0_7_1;
     };
   };
 
