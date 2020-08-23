@@ -1,5 +1,5 @@
 { compiler ? "ghc883"
-, nixpkgs ? import <nixpkgs> {}
+, nixpkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/c59ea8b8a0e7f927e7291c14ea6cd1bd3a16ff38.tar.gz") {}
 }:
 
 let
