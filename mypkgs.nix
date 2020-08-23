@@ -1,5 +1,10 @@
 { compiler ? "ghc883"
-, nixpkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/c59ea8b8a0e7f927e7291c14ea6cd1bd3a16ff38.tar.gz") {}
+# Leave the next line to use a fairly recent nixos-unstable.
+, nixpkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/16fc531784ac226fb268cc59ad573d2746c109c1.tar.gz") {}
+# Comment the above and uncomment the following for bleeding-edge nixos-unstable. You might want to `cachix use manuelbaerenz` or wait a long time for builds.
+# , nixpkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/c59ea8b8a0e7f927e7291c14ea6cd1bd3a16ff38.tar.gz") {}
+# If you have a nix-channel installed locally which you want to use, uncomment and possibly edit the following line, and comment the lines above.
+# , nixpkgs ? import <nixpkgs> {}
 }:
 
 let

@@ -52,6 +52,17 @@ it will automatically reload.
   In Debian-based systems, this amounts to installing these packages:
   `libgl1-mesa-dev` `libglu1-mesa-dev` `freeglut3-dev` `libpulse-dev` `libblas-dev` `liblapack-dev`
 
+### Nix cache & nixpkgs versions
+
+* The `nix-shell` is pinned to an up-to-date version of `nixos-unstable`.
+  This may cause a long build.
+  You can alleviate that by using `cachix`,
+  or using a different `nixpkgs` version.
+* If you use [`cachix`](https://cachix.org/),
+  you can speed up your build by using `cachix use manuelbaerenz`.
+  I'm uploading build artifacts there.
+* To use a different `nixpkgs`, edit the first lines of `mypkgs.nix`, and re-run `nix-shell`.
+
 ### Non-Linux systems
 
 #### Windows
