@@ -45,9 +45,12 @@ it will automatically reload.
   (See [below](#non-linux-systems).)
 * A standard Haskell development environment, including `cabal` and `ghci`.
   (`stack` is not needed.)
+  Supported GHC versions are 8.6 and 8.8.
 * [`ghcid`](https://github.com/ndmitchell/ghcid).
 * OpenGL development libraries and PulseAudio development libraries.
   (For other sound setups, see [below](#sound-support).)
+  In Debian-based systems, this amounts to installing these packages:
+  `libgl1-mesa-dev` `libglu1-mesa-dev` `freeglut3-dev` `libpulse-dev` `libblas-dev` `liblapack-dev`
 
 ### Non-Linux systems
 
