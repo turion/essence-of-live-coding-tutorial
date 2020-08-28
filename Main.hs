@@ -8,12 +8,17 @@ module Main where
 import Control.Arrow
 import Control.Monad
 import Control.Monad.Fix (MonadFix)
+import Data.Foldable
 import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
+import Text.Read
 
 -- vector-space
 import Data.VectorSpace
+
+-- utf8-string
+import Data.ByteString.UTF8
 
 -- essence-of-live-coding
 import LiveCoding hiding (integrate)
