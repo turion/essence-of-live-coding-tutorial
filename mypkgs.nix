@@ -48,6 +48,7 @@ let
     # Uncomment the following lines if you have forked essence-of-live-coding and insert the appropriate path
     # essence-of-live-coding = ../essence-of-live-coding/essence-of-live-coding;
     # essence-of-live-coding-gloss = ../essence-of-live-coding/essence-of-live-coding-gloss;
+    # essence-of-live-coding-warp = ../essence-of-live-coding/essence-of-live-coding-warp;
   });
 in
 myPkgs
