@@ -71,7 +71,7 @@ border = (borderX, borderY)
 glossSettings :: GlossSettings
 glossSettings = defaultSettings
   { debugEvents = True
-  , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
+  , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (0, 0)
   }
 
 glossRunCell :: Cell (HandlingStateT IO) () (Maybe ())
