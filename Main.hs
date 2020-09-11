@@ -42,20 +42,25 @@ main = runHandlingStateT $ foreground liveProgram
 
 liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
-  queryMaybe <- warpRunCell -< ()
-  glossRunCell              -< queryMaybe
-  -- pulseRunCell              -< ()
-  returnA                   -< ()
+  requestInfoMaybe <- warpRunCell -< ()
+  glossRunCell                    -< requestInfoMaybe
+  -- pulseRunCell                    -< ()
+  returnA                         -< ()
 
 -- * Warp subcomponent
 
-warpRunCell :: Cell (HandlingStateT IO) () (Maybe Query)
+warpRunCell :: Cell (HandlingStateT IO) () (Maybe RequestInfo)
 warpRunCell = runWarpC 8080 warpCell
 
-warpCell :: Cell IO ((), Request) (Query, Response)
+warpCell :: Cell IO ((), Request) (RequestInfo, Response)
 warpCell = proc ((), request) -> do
   body <- arrM lazyRequestBody -< request
-  returnA -< (queryString request, emptyResponse)
+  returnA -< (getRequestInfo request, emptyResponse)
+
+type RequestInfo = String
+
+getRequestInfo :: Request -> RequestInfo
+getRequestInfo = toString . renderQuery False . queryString
 
 emptyResponse :: Response
 emptyResponse = responseLBS
@@ -82,27 +87,27 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe ())
-glossRunCell = glossWrapC glossSettings $ glossCell
+glossRunCell :: Cell (HandlingStateT IO) (Maybe RequestInfo) (Maybe ())
+glossRunCell = glossWrapC glossSettings $ (buffered glossCell >>> arr (const ()))
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
-glossCell :: Cell PictureM (Maybe Query) ()
-glossCell = proc queryMaybe -> do
+glossCell :: Cell PictureM (Maybe RequestInfo) (Maybe ())
+glossCell = proc requestInfoMaybe -> do
   events <- constM ask -< ()
   ball <- ballSim      -< events
   addPicture           -< holePic hole
   addPicture           -< pictures $ obstaclePic <$> obstacles
   addPicture           -< ballPic ball
-  actOnRequest         -< queryMaybe
-  returnA              -< ()
+  actOnRequest         -< requestInfoMaybe
+  returnA              -< requestInfoMaybe $> ()
 
 -- * Parse web request
 
-actOnRequest :: Cell PictureM (Maybe Query) ()
-actOnRequest = proc queryMaybe -> do
-  string <- keep "" -< toString <$> renderQuery False <$> queryMaybe
+actOnRequest :: Cell PictureM (Maybe RequestInfo) ()
+actOnRequest = proc requestInfoMaybe -> do
+  string <- keep "" -< requestInfoMaybe
   addPicture
     -< translate (-250) 300
     $  scale 0.2 0.2
