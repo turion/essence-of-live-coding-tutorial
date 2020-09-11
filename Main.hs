@@ -7,12 +7,13 @@ module Main where
 -- base
 import Control.Arrow
 import Control.Monad
+import Control.Monad.IO.Class
 import Control.Monad.Fix (MonadFix)
 import Data.Foldable
 import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
-import Text.Read
+import Text.Read (readMaybe)
 
 -- vector-space
 import Data.VectorSpace
