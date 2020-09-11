@@ -127,7 +127,7 @@ ballSim = proc events -> do
   returnA -< ball
 
 clicks :: [Event] -> [(Float, Float)]
-clicks = catMaybes . map click
+clicks = mapMaybe click
 
 click :: Event -> Maybe (Float, Float)
 click (EventKey (MouseButton LeftButton) Down _ pos) = Just pos
