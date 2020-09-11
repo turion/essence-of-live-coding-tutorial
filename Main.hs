@@ -43,21 +43,38 @@ main = runHandlingStateT $ foreground liveProgram
 
 liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
-  queryMaybe <- warpRunCell     -< ()
-  isObsHitMaybe <- glossRunCell -< queryMaybe
-  isObsHit <- keep 0            -< isObsHitMaybe
-  pulseRunCell                  -< isObsHit
-  returnA                       -< ()
+  requestInfoMaybe <- warpRunCell -< ()
+  isObsHitMaybe <- glossRunCell   -< requestInfoMaybe
+  isObsHit <- keep 0              -< isObsHitMaybe
+  pulseRunCell                    -< isObsHit
+  returnA                         -< ()
 
 -- * Warp subcomponent
 
-warpRunCell :: Cell (HandlingStateT IO) () (Maybe Query)
+warpRunCell :: Cell (HandlingStateT IO) () (Maybe RequestInfo)
 warpRunCell = runWarpC 8080 warpCell
 
-warpCell :: Cell IO ((), Request) (Query, Response)
+warpCell :: Cell IO ((), Request) (RequestInfo, Response)
 warpCell = proc ((), request) -> do
   body <- arrM lazyRequestBody -< request
-  returnA -< (queryString request, emptyResponse)
+  returnA -< (getRequestInfo request, emptyResponse)
+
+type RequestInfo = (String, Maybe (Float, Float))
+
+getRequestInfo :: Request -> RequestInfo
+getRequestInfo = getQueryString &&& parseWarpImpulse
+
+getQueryString :: Request -> String
+getQueryString = toString . renderQuery False . queryString
+
+parseWarpImpulse :: Request -> Maybe (Float, Float)
+parseWarpImpulse request = do
+  let query = queryString request
+  xText <- join $ lookup "x" query
+  yText <- join $ lookup "y" query
+  x <- readMaybe $ toString xText
+  y <- readMaybe $ toString yText
+  return (x, y)
 
 keepNStrings :: (Monad m, Data a) => Int -> Cell m (Maybe a) [a]
 keepNStrings n = foldC step []
@@ -89,36 +106,33 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
   }
 
-glossRunCell :: Cell (HandlingStateT IO) (Maybe Query) (Maybe Float)
-glossRunCell = glossWrapC glossSettings $ glossCell
+glossRunCell :: Cell (HandlingStateT IO) (Maybe RequestInfo) (Maybe Float)
+glossRunCell = glossWrapC glossSettings $ bufferedGlossCell
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
+
+bufferedGlossCell :: Cell PictureM (Maybe RequestInfo) Float
+bufferedGlossCell = feedback False $ proc (requestInfoMaybe, requestCame) -> do
+  requestInfoMaybe' <- buffer -< [Pop | requestCame] ++ maybePush requestInfoMaybe
+  glossCell -< requestInfoMaybe'
 
 -- ** Main gloss cell
 
-glossCell :: Cell PictureM (Maybe Query) Float
-glossCell = proc queryMaybe -> do
-  let webImpulse = queryMaybe >>= parseWebImpulse
+glossCell :: Cell PictureM (Maybe RequestInfo) (Float, Bool)
+glossCell = proc requestInfoMaybe -> do
+  let warpImpulse = snd =<< requestInfoMaybe
   events <- constM ask        -< ()
-  (ball, isObsHit) <- ballSim -< (events, webImpulse)
+  (ball, isObsHit) <- ballSim -< (events, warpImpulse)
   addPicture                  -< holePic hole
   addPicture                  -< pictures $ obstaclePic <$> obstacles
   addPicture                  -< ballPic ball
-  actOnRequest                -< queryMaybe
-  returnA                     -< isObsHit
+  actOnRequest                -< requestInfoMaybe
+  returnA                     -< (isObsHit, isJust requestInfoMaybe)
 
 -- * Parse web request
 
-parseWebImpulse :: Query -> Maybe (Float, Float)
-parseWebImpulse query = do
-  xText <- join $ lookup "x" query
-  yText <- join $ lookup "y" query
-  x <- readMaybe $ toString xText
-  y <- readMaybe $ toString yText
-  return (x, y)
-
-actOnRequest :: Cell PictureM (Maybe Query) ()
-actOnRequest = proc queryMaybe -> do
-  string <- keep "" -< toString <$> renderQuery False <$> queryMaybe
+actOnRequest :: Cell PictureM (Maybe RequestInfo) ()
+actOnRequest = proc requestInfoMaybe -> do
+  string <- keep "" -< fst <$> requestInfoMaybe
   addPicture
     -< translate (-250) 300
     $  scale 0.2 0.2
