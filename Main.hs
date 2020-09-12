@@ -17,12 +17,6 @@ import Data.Functor
 import Data.Maybe
 import Text.Read (readMaybe)
 
--- bytestring
-import qualified Data.ByteString as ByteString
-
--- utf8-string
-import Data.ByteString.UTF8 (toString)
-
 -- vector-space
 import Data.VectorSpace
 
