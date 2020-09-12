@@ -9,20 +9,19 @@ module Main where
 -- base
 import Control.Arrow
 import Control.Monad
+import Control.Monad.IO.Class
 import Control.Monad.Fix (MonadFix)
+import Data.Foldable
 import Data.Function ((&))
 import Data.Functor
 import Data.Maybe
 import Text.Read (readMaybe)
 
--- bytestring
-import qualified Data.ByteString as ByteString
-
--- utf8-string
-import Data.ByteString.UTF8 (toString)
-
 -- vector-space
 import Data.VectorSpace
+
+-- utf8-string
+import Data.ByteString.UTF8 hiding (take)
 
 -- essence-of-live-coding
 import LiveCoding hiding (integrate)
@@ -79,7 +78,7 @@ parseWarpImpulse request = do
 keepNStrings :: (Monad m, Data a) => Int -> Cell m (Maybe a) [a]
 keepNStrings n = foldC step []
   where
-    step stringMaybe strings = take n $ fromMaybe id ((:) <$> stringMaybe) strings
+    step stringMaybe strings = take n $ maybe id (:) stringMaybe strings
 
 emptyResponse :: Response
 emptyResponse = responseLBS
@@ -103,7 +102,7 @@ border = (borderX, borderY)
 glossSettings :: GlossSettings
 glossSettings = defaultSettings
   { debugEvents = True
-  , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (20, 20)
+  , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (0, 0)
   }
 
 glossRunCell :: Cell (HandlingStateT IO) (Maybe RequestInfo) (Maybe Float)
@@ -241,7 +240,7 @@ ballSim = proc (events, webImpulse) -> do
   returnA -< (ball, isObsHit)
 
 clicks :: [Event] -> [(Float, Float)]
-clicks = catMaybes . map click
+clicks = mapMaybe click
 
 click :: Event -> Maybe (Float, Float)
 click (EventKey (MouseButton LeftButton) Down _ pos) = Just pos
