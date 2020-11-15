@@ -40,6 +40,7 @@ import LiveCoding.Warp
 main :: IO ()
 main = runHandlingStateT $ foreground liveProgram
 
+-- Uncomment the different *RunCells to start different media backends!
 liveProgram :: LiveProgram (HandlingStateT IO)
 liveProgram = liveCell $ proc _ -> do
   requestInfoMaybe <- warpRunCell -< ()
@@ -49,16 +50,20 @@ liveProgram = liveCell $ proc _ -> do
 
 -- * Warp subcomponent
 
+-- | Starts a webserver on port 8080
 warpRunCell :: Cell (HandlingStateT IO) () (Maybe RequestInfo)
 warpRunCell = runWarpC 8080 warpCell
 
+-- | This handles the incoming request from the webserver
 warpCell :: Cell IO ((), Request) (RequestInfo, Response)
 warpCell = proc ((), request) -> do
   body <- arrM lazyRequestBody -< request
   returnA -< (getRequestInfo request, emptyResponse)
 
+-- | The type of interesting data from the request
 type RequestInfo = (String, Maybe (Float, Float))
 
+-- | Extract data from the request to use in the rest of the program
 getRequestInfo :: Request -> RequestInfo
 getRequestInfo = getQueryString &&& parseWarpImpulse
 
@@ -74,6 +79,7 @@ parseWarpImpulse request = do
   y <- readMaybe $ toString yText
   return (x, y)
 
+-- Extend this for a more interesting website
 emptyResponse :: Response
 emptyResponse = responseLBS
   status200
@@ -99,12 +105,14 @@ glossSettings = defaultSettings
   , displaySetting = InWindow "Essence of Live Coding Tutorial" (border ^* 2) (0, 0)
   }
 
+-- | Run the gloss backend at 30 frames per second
 glossRunCell :: Cell (HandlingStateT IO) (Maybe RequestInfo) (Maybe ())
 glossRunCell = glossWrapC glossSettings $ (buffered glossCell >>> arr (const ()))
   & (`withDebuggerC` statePlay) -- Uncomment to display the internal state
 
 -- ** Main gloss cell
 
+-- | This cell is called for every frame of the graphics output
 glossCell :: Cell PictureM (Maybe RequestInfo) (Maybe ())
 glossCell = proc requestInfoMaybe -> do
   let warpImpulse = snd =<< requestInfoMaybe
@@ -178,12 +186,14 @@ obstaclePic Obstacle { obstaclePos = (x, y), .. }
 ballRadius :: Num a => a
 ballRadius = 20
 
+-- | Draw the ball in gloss
 ballPic :: Ball -> Picture
 ballPic Ball { ballPos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
 
 holePic :: Hole -> Picture
 holePic Hole { holePos = (x, y), holeRad } = translate x y $ color green $ thickCircle (holeRad / 2) holeRad
 
+-- | The type of internal state of the 'ballSim'
 data Ball = Ball
   { ballPos :: (Float, Float)
   , ballVel :: (Float, Float)
@@ -201,6 +211,7 @@ repulse Ball { .. } Obstacle { .. }
       then obstacleRep *^ vecDiff
       else zeroV
 
+-- | Simulate the position of the ball, given recent events such as mouse clicks
 ballSim :: (Monad m, MonadFix m) => Cell m ([Event], Maybe (Float, Float)) Ball
 ballSim = proc (events, webImpulse) -> do
   rec
@@ -227,6 +238,7 @@ ballSim = proc (events, webImpulse) -> do
     let ball = Ball newPos newVel
   returnA -< ball
 
+-- | Extract the positions of left mouse clicks
 clicks :: [Event] -> [(Float, Float)]
 clicks = mapMaybe click
 
@@ -236,6 +248,7 @@ click _ = Nothing
 
 -- * Pulse subcomponent
 
+-- | Run the PulseAudio backend at 48000 samples per second
 pulseRunCell :: Cell (HandlingStateT IO) () [()]
 pulseRunCell = pulseWrapC 1600 $ arr (const 440) >>> sawtooth >>> addSample
 
