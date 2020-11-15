@@ -1,4 +1,4 @@
-{ compiler ? "ghc883"
+{ compiler ? "ghc884"
 # Leave the next line to use a fairly recent nixos-unstable.
 , nixpkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/16fc531784ac226fb268cc59ad573d2746c109c1.tar.gz") {}
 # Comment the above and uncomment the following for bleeding-edge nixos-unstable. You might want to `cachix use manuelbaerenz` or wait a long time for builds.
