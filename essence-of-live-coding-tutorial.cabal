@@ -27,6 +27,8 @@ build-type:          Simple
 extra-source-files:  CHANGELOG.md
 extra-doc-files:     README.md
 
+tested-with: GHC == 8.6.5, GHC == 8.8.4
+
 flag pulse
   description: Build with pulse audio backend on linux.
 
@@ -37,7 +39,7 @@ source-repository head
 executable essence-of-live-coding-tutorial
   main-is:             Main.hs
   build-depends:
-      base >= 4.11 && < 5
+      base >= 4.12 && < 4.14
     , gloss >= 1.13
     , vector-space >= 0.16
     , bytestring >= 0.10
