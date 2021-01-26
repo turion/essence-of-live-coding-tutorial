@@ -37,7 +37,7 @@ source-repository head
 executable essence-of-live-coding-tutorial
   main-is:             Main.hs
   build-depends:
-      base >= 4.11 && < 5
+      base >= 4.12 && < 4.14
     , gloss >= 1.13
     , vector-space >= 0.16
     , bytestring >= 0.10
@@ -51,3 +51,5 @@ executable essence-of-live-coding-tutorial
       essence-of-live-coding-pulse >= 0.2.4
 
   default-language:    Haskell2010
+
+tested-with: GHC == 8.6.5, GHC == 8.8.4
