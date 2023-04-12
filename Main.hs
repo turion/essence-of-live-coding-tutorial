@@ -113,7 +113,7 @@ ballRadius = 20
 
 -- | Draw the ball in gloss
 ballPic :: Ball -> Picture
-ballPic Ball { ballPos = (x, y) } = translate x y $ color white $ thickCircle (ballRadius / 2) ballRadius
+ballPic Ball { ballPos = (x, y) } = translate x y $ color red $ thickCircle (ballRadius / 2) ballRadius
 
 -- | The type of internal state of the 'ballSim'
 data Ball = Ball
